@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+</head>
+<body>
+    <form id="myform">
+        <input type="test" name="name">
+    </form>    
+</body>
+<script>
+    $('.myclass') // class 가 myclass 인 요소
+    $('#myform') // id 가 myform인 요소
+    $('input[name="username"]')  // name 속성이 username인 input요소 선택택
+
+    // id가 btn인 요소에 이벤트 'click'이 발생했을때 동작을 정의의
+    $('#btn').on('click',function(){
+        alert('버튼클릭')
+    })
+
+    // .val()
+    // input select 등의 값을 가져오거나 설정
+    const username =  $('input[name="username"]').val()   // 값 읽기
+    $('input[name="username"]').val('홍길동')  // 값 설정
+
+    // 폼 제출시 페이지 리로드와 같은 기본 동작을 막음  e.preventDefault()
+     $('form').on('submit',function(e){
+        e.preventDefault() // 폼 전송막음음
+        alert('기본 제출 방지')
+    })
+    // 비동기 통신
+    $.ajax({
+        url:'/api/text',
+        type : 'post',
+        contentType : 'application/json',
+        data : JSON.stringify({key:'value'}),
+        success:function(response){
+            alert('성공: '+ response.massage)
+        },
+        error:function(xhr){
+            alert('에러코드', xhr.status)
+        }
+    })
+</script>
+</html>
