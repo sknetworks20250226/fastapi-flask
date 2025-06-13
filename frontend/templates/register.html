@@ -33,8 +33,10 @@
             
             if(response.status== 200) {
                 alert(result.message)    
-            }else{            
+            }else if(response.status== 400){            
                 alert(result.detail)
+            }else{
+                alert("내부오류 " + e)
             }
             
         }
