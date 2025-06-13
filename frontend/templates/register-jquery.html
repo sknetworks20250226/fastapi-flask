@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>register</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+</head>
+<body>
+    <h1>회원가입</h1>
+    <form id="registerform">
+        <input type="text" name="username" placeholder="사용자 이름" required>
+        <input type="email" id="email" name="email" placeholder="이메일" required>
+        <input type="password" name="password" placeholder="비밀번호" required>
+        <button type="submit">가입</button>
+    </form>
+</body>
+<script>
+    // 이벤트 등록 - form 
+    $('#registerform').on('submit',function(e){
+        e.preventDefault();
+        const data = {
+            username: $('input[name="username"]').val(),
+            email: $('#email').val(),
+            password: $('input[name="password"]').val(),
+        };
+        $.ajax({
+            url : "http://localhost:8000/api/register",
+            type : 'post',
+            contentType:'application/json',
+            data : JSON.stringify(data),
+            success:function(e){
+                alert(e.message);
+                window.location.href = '/login';
+            },
+            error:function(e){
+                if(e.status == 400){
+                    alert("이미 존재하는 회원입니다.")
+                }else{
+                    alert('회원가입실패')
+                }
+            }
+        })
+
+    })
+</script>
+</html>
