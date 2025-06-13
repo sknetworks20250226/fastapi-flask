@@ -36,8 +36,11 @@
             }
         })
 
+        // .add-to-cart 객체가 동적으로 만들어 졌으면 .on이벤트는 기존요소에만 적용
+        // $(document) --> 문서 전체를 감싸고 있는 객체로 이 객체를 통해서 동적으로 만든 버튼에
+        // 이벤트를 적용하라고 $(document) 한테 위임을 해줘야 한다.  - event delegation(이벤트 위임)
         // 장바구니 담기 : Cart 테이블에 데이터 insert
-        $('.add-to-cart').on('click',function(){
+        $(document).on('click', '.add-to-cart',  function(){
             const productid = $(this).data('product-id');
             const quantity = $(this).siblings('.quantity-input').val();
             const userid = 1
