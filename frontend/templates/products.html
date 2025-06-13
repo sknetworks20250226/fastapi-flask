@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>상품조회</title>
+    <title>상품 목록</title>
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -17,10 +17,22 @@
             url : "http://localhost:8000/api/products",
             type : 'get',                        
             success:function(products){
-                
+                const productlist = $('#productlist')
+                productlist.empty()
+                products.array.forEach(product => {
+                    const productHtml = `
+                        <div class = "product-item">
+                            <h3>${product.name}</h3>
+                            <p>가격 : ${product.price}원</p>
+                            <input type='number' value="1" min="1">
+                            <button data-product-id = "${product.id}">장바구니 담기</button>
+                        </div>    
+                    `
+                    productlist.append(productHtml)
+                });
             },
             error:function(e){
-                
+                $('#message').text('상품목록을 가져오는데 실패했습니다.')
             }
         })
 
