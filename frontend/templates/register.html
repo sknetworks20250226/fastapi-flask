@@ -23,14 +23,15 @@
                 username: formData.get('username'),
                 email: formData.get('email'),
                 password: formData.get('password'),
-            };
+            };            
             const response = await fetch("http://localhost:8000/api/register",{
                 method:'post',
                 headers:{'Content-type':'application/json'},
                 body: JSON.stringify(data)  // json 객체를 스트링형태로 변환
             })
             const result = await response.json()  // string형태의 json을 실제 json객체로변환
-            alert(result.message)
+            alert(result.detail)
+            
         }
     )
 </script>
