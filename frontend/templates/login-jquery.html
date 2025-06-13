@@ -20,20 +20,21 @@
             e.preventDefault();
             const formData = new FormData(e.target);
             const data = {
-                username: formData.get('username'),
-                password: formData.get('password')
+                username: $('input[type="username"]').val(),
+                password: $('input[type="password"]').val()
             };
-            const response = await fetch('http://localhost:8000/api/login',{
-                method:'post',
-                headers:{'Content-Type':'application/json'},
-                body:JSON.stringify(data)
-            });
-            const result = await response.json();
-            if(response.status == 200){
-                alert(result.message);
-            }else{
-                alert(result.detail)
-            }
+            $.ajax({
+                url : 'http://localhost:8000/api/login',
+                type : 'post',
+                contentType:'application/json',
+                data : JSON.stringify(data),
+                success: function(e){
+                    alert(e.message);
+                },
+                error:function(e){                    
+                    alert("로그인 실패")
+                }
+            })
         }
     )
 </script>
