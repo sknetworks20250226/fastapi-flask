@@ -19,7 +19,7 @@
             success:function(products){
                 const productlist = $('#productlist')
                 productlist.empty()
-                products.array.forEach(product => {
+                products.forEach(product => {
                     const productHtml = `
                         <div class = "product-item">
                             <h3>${product.name}</h3>
