@@ -13,10 +13,12 @@
     <h2><a class = 'nav-link' data="/register">회원가입</a></h2>
 </body>
 <script>
-    $('.nav-link').on('click',function(e){
-        e.preventDefault();
-        window.location.href = $(this).attr('data')
-    });    
-    
+    // DOM객체가 로딩이 완료된후
+    $(document).ready(function(){
+        $('.nav-link').on('click',function(e){
+            e.preventDefault();
+            window.location.href = $(this).attr('data')
+        }); 
+    })
 </script>
 </html>
