@@ -4,9 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>index</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 </head>
 <body>
-    <h2><a href="/login">로그인</a></h2>
-    <h2><a href="/register">회원가입</a></h2>
+    <!-- <h2><a href="/login">로그인</a></h2>
+    <h2><a href="/register">회원가입</a></h2> -->
+    <h2><a class = 'nav-link' data="/login">로그인</a></h2>
+    <h2><a class = 'nav-link' data="/register">회원가입</a></h2>
 </body>
+<script>
+    $('.nav-link').on('click',function(e){
+        e.preventDefault();
+        window.location.href = $(this).attr('data')
+    });    
+    
+</script>
 </html>
