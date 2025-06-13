@@ -30,7 +30,12 @@
                 body: JSON.stringify(data)  // json 객체를 스트링형태로 변환
             })
             const result = await response.json()  // string형태의 json을 실제 json객체로변환
-            alert(result.detail)
+            
+            if(response.status== 200) {
+                alert(result.message)    
+            }else{            
+                alert(result.detail)
+            }
             
         }
     )
