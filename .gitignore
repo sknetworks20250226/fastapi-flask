@@ -1,0 +1,16 @@
+# VSCode settings folder
+.vscode/
+
+# VSCode workspace files
+*.code-workspace
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.env
+.venv/
+
+# slqite
+*.db
