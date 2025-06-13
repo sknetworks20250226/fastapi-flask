@@ -6,6 +6,32 @@
     <title>register</title>
 </head>
 <body>
-    
+    <h1>회원가입</h1>
+    <form id="registerform">
+        <input type="text" name="username" placeholder="사용자 이름" required>
+        <input type="email" name="email" placeholder="이메일" required>
+        <input type="password" name="password" placeholder="비밀번호" required>
+        <button type="submit">가입</button>
+    </form>
 </body>
+<script>
+    document.getElementById('registerform').addEventListener('submit',
+        async function(e){
+            e.preventDefault();
+            const formData =  new FormData(e.target);
+            const data = {
+                username: formData.get('username'),
+                email: formData.get('email'),
+                password: formData.get('password'),
+            };
+            const response = await fetch("http://localhost:8000/api/register",{
+                method:'post',
+                headers:{'Content-type':'application/json'},
+                body: JSON.stringify(data)  // json 객체를 스트링형태로 변환
+            })
+            const result = await response.json()  // string형태의 json을 실제 json객체로변환
+            alert(result.message)
+        }
+    )
+</script>
 </html>

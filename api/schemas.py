@@ -5,8 +5,8 @@ from pydantic import BaseModel
 class RegisterRequest(BaseModel):
     username: str
     email: str
-    passowrd: str
-    
+    password: str
+
 class UserCreate(BaseModel):
     username: str
     password: str
