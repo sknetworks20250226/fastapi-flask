@@ -48,7 +48,7 @@ from fastapi import FastAPI, Request
 def register_user(user: RegisterRequest, db:Session=Depends(get_db)):
     # 같은 사용자가 있는지 조회
     existing_user =  db.query(User) \
-        .filter(User.username == user.username, User.email == user.email) \
+        .filter(User.username == user.username or User.email == user.email) \
         .first()
     # 같은 사용자가 있으면  400에러로 응답
     if existing_user:
