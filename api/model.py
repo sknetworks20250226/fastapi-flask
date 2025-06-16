@@ -1,6 +1,7 @@
 # 데이터 베이스 테이블 정의
-from sqlalchemy import Column,Integer,String,ForeignKey
+from sqlalchemy import Column,Integer,String,ForeignKey,DateTime
 from database import Base
+from datetime import datetime
 
 class User(Base):  # 테이블  Base를 상속받아야만  sqlite 테이블 생성  
     __tablename__ ='users'
@@ -29,3 +30,4 @@ class Order(Base):
     user_id = Column(Integer,ForeignKey('users.id'))
     product_id = Column(Integer,ForeignKey('products.id'))
     quantity = Column(Integer)
+    created_at = Column(DateTime, default=datetime.utcnow)

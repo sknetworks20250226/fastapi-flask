@@ -4,48 +4,71 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>login</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.7.1.js" 
         integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" 
         crossorigin="anonymous"></script>
+    <style>
+        .login-container {
+            max-width: 400px;
+            margin: 50px auto;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
-    <h2>로그인</h2>
-    <form method="POST" action="{{ url_for('login') }}">
-        <input type="hidden" name="next" value="{{ request.args.get('next', '') }}">
-        <input type="text" name="username" placeholder="이름" required>
-        <input type="password" name="password" required>
-        <button type="submit">로그인</button>
-    </form>
-    <div>
-        <a href="/register">회원가입</a>
+    <div class="container">
+        <div class="login-container">
+            <h2 class="text-center mb-4">로그인</h2>
+            <form id="loginform">
+                <input type="hidden" name="next" value="{{ request.args.get('next', '') }}">
+                <div class="mb-3">
+                    <input type="text" class="form-control" name="username" placeholder="이름" required>
+                </div>
+                <div class="mb-3">
+                    <input type="password" class="form-control" name="password" placeholder="비밀번호" required>
+                </div>
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">로그인</button>
+                </div>
+            </form>
+            <div class="text-center mt-3">
+                <a href="/register" class="text-decoration-none">회원가입</a>
+            </div>
+            <div id="message" class="alert alert-danger mt-3" style="display: none;"></div>
+        </div>
     </div>
-    <div id="message"></div>
-</body>
-<!-- <script>
-    $(document).ready(function(){
-         $('#loginform').on('submit',
-            function(e) {
-                e.preventDefault();                
+
+    <!-- Bootstrap 5 JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#loginform').on('submit', function(e) {
+                e.preventDefault();
                 const data = {
                     username: $('input[name="username"]').val(),
                     password: $('input[name="password"]').val()
                 };
+                
                 $.ajax({
-                    url : 'http://localhost:8000/api/login',
-                    type : 'post',
-                    contentType:'application/json',
-                    data : JSON.stringify(data),
-                    success: function(response){
-                        if(response.success){
-                            window.location.href = '/products'
+                    url: 'http://localhost:8000/api/login',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    success: function(response) {
+                        if (response.success) {
+                            window.location.href = '/';
                         }
                     },
-                    error:function(e){                    
-                        $('#message').text('로그인에 실패했습니다. 아이디와 비번을 확인해 주세요')
+                    error: function(xhr) {
+                        $('#message').text('로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.').show();
                     }
-                })
-            }
-        )
-    })   
-</script> -->
+                });
+            });
+        });
+    </script>
+</body>
 </html>

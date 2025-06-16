@@ -3,59 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>주문 내역</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <style>
+        .order-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+        }
+    </style>
 </head>
 <body>
-    <div>
-        <a href="/">홈</a>
-        <a href="/products">상품목록</a>
-        <a href="/cart">장바구니</a>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="/">쇼핑몰</a>
+            <div class="navbar-nav">
+                <a class="nav-link" href="/products">상품목록</a>
+                <a class="nav-link" href="/cart">장바구니</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2 class="mb-4">주문내역</h2>
+        <div id="orderlist"></div>
+        <div id="total-price" class="h4 text-primary my-4"></div>
+        <div id="message" class="alert mt-3" style="display: none;"></div>
     </div>
-    <h2>주문내역</h2>
-    <div id='orderlist'></div>
-    <div id="total-price"></div>
-    <div id="'message"></div>
-    
-</body>
-<script>
-$(document).ready(function() {
-    const userId = 1; // 예시로 사용자 ID를 1로 설정
-    function loadOrders() {
-        $.ajax({
-            url: `http://localhost:8000/api/order?user_id=${userId}`,
-            type: 'GET',
-            success: function(orders) {
-                const orderList = $('#orderlist');
-                orderList.empty(); // 기존 주문 내역 비우기
 
-                if (orders.length === 0) {
-                    orderList.html('<p>주문 내역이 없습니다.</p>');
-                    return;
-                }
+    <!-- Bootstrap 5 JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            const userId = 1; // 예시로 사용자 ID를 1로 설정
+            function loadOrders() {
+                $.ajax({
+                    url: `http://localhost:8000/api/order?user_id=${userId}`,
+                    type: 'GET',
+                    success: function(orders) {
+                        const orderList = $('#orderlist');
+                        orderList.empty(); // 기존 주문 내역 비우기
 
-                orders.forEach(order => {
-                    orderList.append(`
-                        <div>
-                            <span> ${order.product.name}</span>
-                            <span>수량: ${order.quantity}</span>
-                            <span>가격: ${order.product.price * order.quantity} 원</span>
-                        </div>
-                    `);
+                        if (orders.length === 0) {
+                            orderList.html('<div class="alert alert-info">주문 내역이 없습니다.</div>');
+                            return;
+                        }
+
+                        // 주문을 날짜별로 그룹화
+                        const ordersByDate = {};
+                        orders.forEach(order => {
+                            const date = new Date(order.created_at).toLocaleDateString('ko-KR', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                            });
+                            if (!ordersByDate[date]) {
+                                ordersByDate[date] = [];
+                            }
+                            ordersByDate[date].push(order);
+                        });
+
+                        // 날짜별로 주문 표시
+                        Object.entries(ordersByDate).forEach(([date, dateOrders]) => {
+                            orderList.append(`
+                                <div class="order-date-group mb-4">
+                                    <h3 class="h4 mb-3">${date}</h3>
+                                    ${dateOrders.map(order => `
+                                        <div class="order-item">
+                                            <div class="row align-items-center">
+                                                <div class="col-md-6">
+                                                    <h3 class="h5">${order.product.name}</h3>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <p class="mb-0">수량: ${order.quantity}</p>
+                                                    <p class="text-primary mb-0">가격: ${(order.product.price * order.quantity).toLocaleString()}원</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            `);
+                        });
+
+                        const totalPrice = orders.reduce((total, order) => total + (order.product.price * order.quantity), 0);
+                        $('#total-price').text(`총 가격: ${totalPrice.toLocaleString()}원`);
+                    },
+                    error: function() {
+                        $('#message').removeClass('alert-success').addClass('alert-danger').text('주문 내역을 불러오는 중 오류가 발생했습니다.').show();
+                    }
                 });
-                const totalPrice = orders.reduce((total, order) => total + (order.product.price * order.quantity), 0);
-                $('#total-price').text(`총 가격: ${totalPrice} 원`);
-            },
-            error: function() {
-                $('#message').text('주문 내역을 불러오는 중 오류가 발생했습니다.');
             }
+
+            loadOrders();
         });
-    }
-
-    loadOrders();
-
-});
-</script>
-
-
+    </script>
+</body>
 </html>

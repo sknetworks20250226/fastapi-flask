@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import requests
 import json
 from functools import wraps
@@ -74,34 +74,23 @@ def login():
     app.logger.debug(f'Login next parameter: {request.args.get("next")}')
     
     if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        next_url = request.form.get('next', '')
-        
-        app.logger.debug(f'Login attempt for user: {username}')
-        app.logger.debug(f'Next URL after login: {next_url}')
-        
         try:
             response = requests.post('http://localhost:8000/api/login', 
-                                   json={'username': username, 'password': password})
+                                   json=request.get_json())
             
             if response.status_code == 200:
                 data = response.json()
                 session['user_id'] = data['user_id']
-                session['username'] = username
+                session['username'] = request.get_json()['username']
                 
-                app.logger.info(f'Login successful for user: {username}')
-                app.logger.debug(f'Login successful, redirecting to: {next_url}')
-                
-                if next_url:
-                    return redirect(next_url)
-                return redirect(url_for('index'))
+                app.logger.info(f'Login successful for user: {session["username"]}')
+                return jsonify({"success": True})
             else:
-                app.logger.warning(f'Login failed for user: {username}')
-                return render_template('login.html', error='로그인에 실패했습니다.', next=next_url)
+                app.logger.warning(f'Login failed')
+                return jsonify({"success": False}), 400
         except Exception as e:
             app.logger.error(f'Login error: {str(e)}', exc_info=True)
-            return render_template('login.html', error='서버 오류가 발생했습니다.', next=next_url)
+            return jsonify({"success": False}), 500
     
     return render_template('login.html', next=request.args.get('next', ''))
 

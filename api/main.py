@@ -113,9 +113,7 @@ def register_user(user: RegisterRequest, db:Session=Depends(get_db)):
 
 # 사용자정보 UserCreate 로 DB 조회회
 @app.post('/api/login')
-def login(user:UserCreate, db:Session=Depends(get_db)):
-    # 사용자 테이블에서 입력한 이름과 패스워드가 있는지 조회
-    print(user)
+def login(user:UserCreate, db:Session=Depends(get_db)):    
     found = db.query(User) \
         .filter(User.username == user.username, User.password == user.password) \
         .first()
@@ -167,9 +165,11 @@ from fastapi import Query
 def get_cart(user_id: int = Query(...), db:Session=Depends(get_db)):
     items = db.query(Cart).filter(Cart.user_id == user_id).all()
     return [     
-        {
+        {            
             'product_id':item.product_id ,
-            'quantity':item.quantity
+            'quantity':item.quantity,
+            'id' : item.id,
+
         }
      for item in items
     ]
