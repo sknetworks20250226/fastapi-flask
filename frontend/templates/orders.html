@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div>
+        <a href="/">홈</a>
+        <a href="/products">상품목록</a>
+        <a href="/cart">장바구니</a>
+    </div>
+    <h2>주문내역</h2>
+    <div id='orderlist'></div>
+    <div id="'message"></div>
+</body>
+<script>
+$(document).ready(function() {
+    const userId = 1; // 예시로 사용자 ID를 1로 설정
+    function loadOrders() {
+        $.ajax({
+            url: `http://localhost:8000/api/order?user_id=${userId}`,
+            type: 'GET',
+            success: function(orders) {
+                const orderList = $('#orderlist');
+                orderList.empty(); // 기존 주문 내역 비우기
+
+                if (orders.length === 0) {
+                    orderList.html('<p>주문 내역이 없습니다.</p>');
+                    return;
+                }
+
+                orders.forEach(order => {
+                    orderList.append(`
+                        <div>                            
+                            <p>수량: ${order.quantity}</p>
+                            
+                        </div>
+                    `);
+                });
+            },
+            error: function() {
+                $('#message').text('주문 내역을 불러오는 중 오류가 발생했습니다.');
+            }
+        });
+    }
+
+    loadOrders();
+});
+</script>
+
+
+</html>
