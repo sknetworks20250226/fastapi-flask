@@ -100,6 +100,25 @@
             });
 
         });
+        // 주문하기
+        $('#order-button').click(function() {
+            $.ajax({
+                url: `http://localhost:8000/api/order`,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ user_id: userId }),
+                success: function() {
+                    $('#message').text('주문이 완료되었습니다.');
+                    setTimeout(function() {
+                        window.location.href = '/orders'; // 주문 완료 후 주문 내역 페이지로 이동
+                    }, 2000); // 2초 후 function 실행
+                    
+                },
+                error: function() {
+                    $('#message').text('주문 중 오류가 발생했습니다.');
+                }
+            });
+        });
 
     });
 

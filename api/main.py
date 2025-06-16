@@ -142,8 +142,7 @@ def place_order(order: OrderRequest, db:Session=Depends(get_db)):
             quantity = item.quantity
         )
         db.add(new_order)  # 주문테이블에 추가
-        db.delete(item)  # cart 테이블에서 삭제
-        db.refresh(new_order)  # DB에서 새로 생성된 primary key 값을 new_order 의 id에 저장
+        db.delete(item)  # cart 테이블에서 삭제        
     db.commit()
     return {"success":True, 'message':'주문이 완료 되었습니다'}
 #주문 목록 조회
@@ -180,8 +179,9 @@ def delete_cart_item(cart_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="장바구니 아이템을 찾을 수 없습니다.")
     db.delete(cart_item)
     db.commit()    
-    return {"success": True, "message": "상품이 수정되었습니다.", "product_id": existing_product.id}
-         
+    return {"success": True, "message": "상품이 삭제되었습니다."}
+
+
 
 # 정적 HTML 파일 서빙
 # FAST api 방식
