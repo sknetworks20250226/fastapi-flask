@@ -10,8 +10,8 @@
 </head>
 <body>
     <h2>로그인</h2>
-    <form id="loginform" method="post" 
-    action="{{url_for('login', next=request.args.get('next',''))}}">
+    <form method="POST" action="{{ url_for('login') }}">
+        <input type="hidden" name="next" value="{{ request.args.get('next', '') }}">
         <input type="text" name="username" placeholder="이름" required>
         <input type="password" name="password" required>
         <button type="submit">로그인</button>
