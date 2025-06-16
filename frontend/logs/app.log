@@ -1,0 +1,3 @@
+2025-06-16 15:49:20,605 - werkzeug - WARNING -  * Debugger is active!
+2025-06-16 15:49:20,613 - werkzeug - INFO -  * Debugger PIN: 966-514-189
+2025-06-16 15:50:16,571 - werkzeug - INFO -  * Detected change in 'C:\\fastapi-flask\\frontend\\app.py', reloading

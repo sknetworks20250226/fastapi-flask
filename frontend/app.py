@@ -1,86 +1,158 @@
-from flask import Flask, render_template
-from flask import redirect, url_for, session, flash, request
+from flask import Flask, render_template, request, redirect, url_for, session
 import requests
+import json
 from functools import wraps
 import logging
 import sys
+from logging.handlers import TimedRotatingFileHandler
+import os
+from datetime import datetime
+
+# 현재 스크립트의 절대 경로
+current_dir = os.path.dirname(os.path.abspath(__file__))
+# 프로젝트 루트 디렉토리 (frontend의 상위 디렉토리)
+project_root = os.path.dirname(current_dir)
+# 로그 디렉토리 경로
+log_dir = os.path.join(project_root, 'logs')
+
+# 로그 디렉토리 생성
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
+    print(f'Created log directory at: {log_dir}')
+
+# 로그 파일 경로 설정
+log_file = os.path.join(log_dir, 'app.log')
+print(f'Log file will be saved at: {log_file}')
+
 # 로깅 설정
 logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.StreamHandler(sys.stdout)
+        # 콘솔 출력
+        logging.StreamHandler(sys.stdout),
+        # 파일 출력 (날짜별 로테이션)
+        TimedRotatingFileHandler(
+            filename=log_file,
+            when='midnight',  # 매일 자정에 새로운 파일 생성
+            interval=1,       # 1일 간격
+            backupCount=30,   # 30일치 로그 파일 유지
+            encoding='utf-8'
+        )
     ]
 )
+
+# 로거 설정
 logger = logging.getLogger(__name__)
+logger.info(f'Logging initialized. Log directory: {log_dir}')
 
-
+# Flask 애플리케이션 설정
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # 세션을 사용하기 위한 비밀키 설정
+app.secret_key = 'your-secret-key-here'
+app.logger.setLevel(logging.DEBUG)
 
 # 로그인 체크 데코레이터
 def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        if 'user_id' not in session:            
-            logger.debug(f'Protected URL: {request.url}')
-            logger.debug(f'Request path: {request.path}')
-            logger.debug(f'Request full path: {request.full_path}')
+        if 'user_id' not in session:
+            app.logger.debug(f'Protected URL: {request.url}')
+            app.logger.debug(f'Request path: {request.path}')
+            app.logger.debug(f'Request full path: {request.full_path}')
             return redirect(url_for('login', next=request.path))
-        return f(*args, **kwargs)   # 원래 실행하려던 라우트 함수를 실행
-    decorated_function.__name__ = f.__name__  # 데코레이터로 인해 함수 이름이 변경되므로 원래 이름으로 복원
+        return f(*args, **kwargs)
     return decorated_function
 
 @app.route('/')
-def home():
+def index():
+    app.logger.debug('Accessing index page')
     return render_template('index.html')
-
-@app.route('/logout')
-def logout():
-    session.clear()
-    flash('로그아웃 되었습니다.', 'success')
-    return redirect(url_for('home'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    app.logger.debug(f'Login request method: {request.method}')
+    app.logger.debug(f'Login next parameter: {request.args.get("next")}')
+    
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        next_url = request.form.get('next', '')  # 폼 데이터에서 next 파라미터 읽기
+        username = request.form.get('username')
+        password = request.form.get('password')
+        next_url = request.form.get('next', '')
         
-        response =  requests.post('http://localhost:8000/api/login', 
-            json={
-                'username': username,
-                'password': password
-            })
-        if response.status_code == 200:
-            session['user_id'] = response.json().get('user_id')
-            session['username'] = username
-            flash('로그인 성공!', 'success')
-            if next_url:
-                return redirect(next_url)
-            return redirect(url_for('home'))
-        else:
-            return render_template('register.html', error='로그인 실패')
-    return render_template('login.html')
+        app.logger.debug(f'Login attempt for user: {username}')
+        app.logger.debug(f'Next URL after login: {next_url}')
+        
+        try:
+            response = requests.post('http://localhost:8000/api/login', 
+                                   json={'username': username, 'password': password})
+            
+            if response.status_code == 200:
+                data = response.json()
+                session['user_id'] = data['user_id']
+                session['username'] = username
+                
+                app.logger.info(f'Login successful for user: {username}')
+                app.logger.debug(f'Login successful, redirecting to: {next_url}')
+                
+                if next_url:
+                    return redirect(next_url)
+                return redirect(url_for('index'))
+            else:
+                app.logger.warning(f'Login failed for user: {username}')
+                return render_template('login.html', error='로그인에 실패했습니다.', next=next_url)
+        except Exception as e:
+            app.logger.error(f'Login error: {str(e)}', exc_info=True)
+            return render_template('login.html', error='서버 오류가 발생했습니다.', next=next_url)
+    
+    return render_template('login.html', next=request.args.get('next', ''))
 
-@app.route('/register')
+@app.route('/logout')
+def logout():
+    username = session.get('username', 'unknown')
+    app.logger.info(f'User logged out: {username}')
+    session.clear()
+    return redirect(url_for('index'))
+
+@app.route('/register', methods=['GET', 'POST'])
 def register():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        
+        app.logger.debug(f'Registration attempt for user: {username}')
+        
+        try:
+            response = requests.post('http://localhost:8000/api/register', 
+                                   json={'username': username, 'email': email, 'password': password})
+            
+            if response.status_code == 200:
+                app.logger.info(f'Registration successful for user: {username}')
+                return redirect(url_for('login'))
+            else:
+                app.logger.warning(f'Registration failed for user: {username}')
+                return render_template('register.html', error='회원가입에 실패했습니다.')
+        except Exception as e:
+            app.logger.error(f'Registration error: {str(e)}', exc_info=True)
+            return render_template('register.html', error='서버 오류가 발생했습니다.')
+    
     return render_template('register.html')
 
 @app.route('/products')
 @login_required
 def products():
+    app.logger.debug('Accessing products page')
     return render_template('products.html')
 
 @app.route('/cart')
 @login_required
 def cart():
+    app.logger.debug('Accessing cart page')
     return render_template('cart.html')
 
 @app.route('/orders')
 @login_required
 def orders():
+    app.logger.debug('Accessing orders page')
     return render_template('orders.html')
 
 if __name__ == '__main__':
