@@ -23,7 +23,7 @@
         const userId = 1; // 예시로 사용자 ID를 1로 설정  세션을 사용해서 로그인시 사용자 아이디를 가져와야 함
         function loadCart() {
             $.ajax({
-                url:`http://locahost:8000/api/cart?user_id=${userId}`,
+                url:`http://localhost:8000/api/cart?user_id=${userId}`,
                 type: 'GET',
                 success:function(cartItems){
                     const cartList = $('#cartlist');

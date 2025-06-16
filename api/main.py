@@ -151,6 +151,15 @@ def get_orders(user_id:int = Query(...),db:Session=Depends(get_db)):
     orders = db.query(Order).filter(Order.user_id == user_id).all()
     return orders
 
+
+# 상품 상세조회 
+@app.get('/api/products/{product_id}', response_model=ProductOut)
+def get_product(product_id: int, db: Session = Depends(get_db)):
+    product = db.query(Product).filter(Product.id == product_id).first()
+    if not product:
+        raise HTTPException(status_code=404, detail="상품을 찾을 수 없습니다.")
+    return product
+
 # 정적 HTML 파일 서빙
 # FAST api 방식
 # app.mount("/", StaticFiles(directory="templates", html=True), name="static")
