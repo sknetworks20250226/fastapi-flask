@@ -122,6 +122,7 @@ def get_cart(user_id: int = Query(...), db:Session=Depends(get_db)):
     items = db.query(Cart).filter(Cart.user_id == user_id).all()
     return [     
         {
+            'id':item.id,
             'product_id':item.product_id ,
             'quantity':item.quantity
         }
@@ -178,8 +179,9 @@ def delete_cart_item(cart_id: int, db: Session = Depends(get_db)):
     if not cart_item:
         raise HTTPException(status_code=404, detail="장바구니 아이템을 찾을 수 없습니다.")
     db.delete(cart_item)
-    db.commit()
-    return {"success": True, "message": "장바구니 아이템이 삭제되었습니다.", "cart_id": cart_item.id}
+    db.commit()    
+    return {"success": True, "message": "상품이 수정되었습니다.", "product_id": existing_product.id}
+         
 
 # 정적 HTML 파일 서빙
 # FAST api 방식
