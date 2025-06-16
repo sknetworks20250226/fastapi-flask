@@ -7,11 +7,20 @@
     <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
 </head>
 <body>
-    <!-- <h2><a href="/login">로그인</a></h2>
-    <h2><a href="/register">회원가입</a></h2> -->
-    <h2><a class = 'nav-link' data="/login">로그인</a></h2>
-    <h2><a class = 'nav-link' data="/register">회원가입</a></h2>
-    <h2><a class = 'nav-link' data="/products">상품목록</a></h2>
+    <div>
+        {% if session.get('user_id') %}
+        <div>환영합니다. {{session.get('username')}}님!</div>
+        <h2><a class = 'nav-link' data="/logout">로그아웃</a></h2>
+        <h2><a class = 'nav-link' data="/products">상품목록</a></h2>
+        <h2><a class = 'nav-link' data="/cart">장바구니</a></h2>
+        <h2><a class = 'nav-link' data="/orders">주문목록</a></h2>
+    </div>
+    <div>
+        {% else %}
+        <h2><a class = 'nav-link' data="/login">로그인</a></h2>
+        <h2><a class = 'nav-link' data="/register">회원가입</a></h2>        
+    </div>    
+        {% endif %}
 </body>
 <script>
     // DOM객체가 로딩이 완료된후

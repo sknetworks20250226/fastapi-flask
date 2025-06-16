@@ -68,8 +68,7 @@ def register_user(user: RegisterRequest, db:Session=Depends(get_db)):
 # 사용자정보 UserCreate 로 DB 조회회
 @app.post('/api/login')
 def login(user:UserCreate, db:Session=Depends(get_db)):
-    # 사용자 테이블에서 입력한 이름과 패스워드가 있는지 조회
-    print(user)
+    # 사용자 테이블에서 입력한 이름과 패스워드가 있는지 조회    
     found =  db.query(User) \
         .filter(User.username == user.username , User.password == user.password) \
         .first()
