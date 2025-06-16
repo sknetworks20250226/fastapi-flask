@@ -34,8 +34,10 @@ $(document).ready(function() {
 
                 orders.forEach(order => {
                     orderList.append(`
-                        <div>                            
+                        <div>
+                            <h3>제품명: </h3>
                             <p>수량: ${order.quantity}</p>
+                            <p>가격: 원</p>
                             
                         </div>
                     `);
