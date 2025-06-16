@@ -76,7 +76,7 @@ def login(user:UserCreate, db:Session=Depends(get_db)):
     
     if not found:
         raise HTTPException(status_code=400, detail="로그인 실패")
-    return {"success":True,'message':'로그인 성공'}
+    return {"success":True,'message':'로그인 성공','user_id':found.id}
 
 # 사용자의 고유 id로 user테이블의 데이터 조회
 @app.get('/api/users/{user_id}',response_model=UserResponse)
