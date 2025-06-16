@@ -27,7 +27,7 @@ print(f'Log file will be saved at: {log_file}')
 # 로깅 설정
 logging.basicConfig(
     level=logging.DEBUG,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    format='%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s',
     handlers=[
         # 콘솔 출력
         logging.StreamHandler(sys.stdout),
@@ -48,8 +48,32 @@ logger.info(f'Logging initialized. Log directory: {log_dir}')
 
 # Flask 애플리케이션 설정
 app = Flask(__name__)
-app.secret_key = 'your-secret-key-here'
+app.secret_key = 'your-secret-key-here'  # 실제 운영 환경에서는 안전한 키로 변경해야 합니다
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['PERMANENT_SESSION_LIFETIME'] = 3600  # 세션 유효 시간을 1시간으로 설정
+
+# Flask 로거 설정
 app.logger.setLevel(logging.DEBUG)
+# Flask의 기본 로거 핸들러 제거
+for handler in app.logger.handlers[:]:
+    app.logger.removeHandler(handler)
+# 우리가 만든 로거 핸들러 추가
+app.logger.addHandler(logging.StreamHandler(sys.stdout))
+app.logger.addHandler(TimedRotatingFileHandler(
+    filename=log_file,
+    when='midnight',
+    interval=1,
+    backupCount=30,
+    encoding='utf-8'
+))
+
+# 세션 설정을 위한 before_request 핸들러
+@app.before_request
+def before_request():
+    session.permanent = True  # 모든 요청에서 세션을 영구적으로 설정
+    app.logger.debug(f'Request path: {request.path}')
+    app.logger.debug(f'Request method: {request.method}')
+    app.logger.debug(f'Current session: {dict(session)}')
 
 # 로그인 체크 데코레이터
 def login_required(f):
@@ -72,25 +96,35 @@ def index():
 def login():
     app.logger.debug(f'Login request method: {request.method}')
     app.logger.debug(f'Login next parameter: {request.args.get("next")}')
+    app.logger.debug(f'Current session: {dict(session)}')
     
     if request.method == 'POST':
         try:
-            response = requests.post('http://localhost:8000/api/login', 
+            app.logger.debug(f'Login request data: {request.get_json()}')
+            response = requests.post('http://localhost:8000/api/login',             
                                    json=request.get_json())
+            app.logger.debug(f'Login API response status: {response.status_code}')
+            app.logger.debug(f'Login API response data: {response.json()}')
             
             if response.status_code == 200:
                 data = response.json()
                 session['user_id'] = data['user_id']
                 session['username'] = request.get_json()['username']
+                session.permanent = True  # 세션을 영구적으로 설정
                 
                 app.logger.info(f'Login successful for user: {session["username"]}')
-                return jsonify({"success": True})
+                app.logger.debug(f'Updated session: {dict(session)}')
+                
+                return jsonify({
+                    "success": True,
+                    "redirect": url_for('index')
+                })
             else:
-                app.logger.warning(f'Login failed')
-                return jsonify({"success": False}), 400
+                app.logger.warning(f'Login failed with status: {response.status_code}')
+                return jsonify({"success": False, "message": "로그인에 실패했습니다."}), 400
         except Exception as e:
             app.logger.error(f'Login error: {str(e)}', exc_info=True)
-            return jsonify({"success": False}), 500
+            return jsonify({"success": False, "message": "서버 오류가 발생했습니다."}), 500
     
     return render_template('login.html', next=request.args.get('next', ''))
 

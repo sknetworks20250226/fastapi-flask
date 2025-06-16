@@ -53,18 +53,26 @@
                     password: $('input[name="password"]').val()
                 };
                 
+                console.log('Sending login request:', data);  // 디버깅용 로그
+                
                 $.ajax({
-                    url: 'http://localhost:8000/api/login',
+                    url: '/login',  // 상대 경로로 변경
                     type: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify(data),
                     success: function(response) {
+                        console.log('Login response:', response);  // 디버깅용 로그
                         if (response.success) {
-                            window.location.href = '/';
+                            window.location.href = response.redirect;
                         }
                     },
-                    error: function(xhr) {
-                        $('#message').text('로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.').show();
+                    error: function(xhr, status, error) {
+                        console.error('Login error:', error);  // 디버깅용 로그
+                        let message = '로그인에 실패했습니다.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            message = xhr.responseJSON.message;
+                        }
+                        $('#message').text(message).show();
                     }
                 });
             });
