@@ -33,3 +33,11 @@
 2025-06-16 15:55:30,530 - app - DEBUG - Accessing index page
 2025-06-16 15:55:30,531 - werkzeug - INFO - 127.0.0.1 - - [16/Jun/2025 15:55:30] "GET / HTTP/1.1" 200 -
 2025-06-16 15:55:30,548 - werkzeug - INFO - 127.0.0.1 - - [16/Jun/2025 15:55:30] "[33mGET /.well-known/appspecific/com.chrome.devtools.json HTTP/1.1[0m" 404 -
+2025-06-16 16:32:35,436 - __main__ - INFO - Logging initialized. Log directory: C:\fastapi-flask\logs
+2025-06-16 16:32:35,472 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on http://127.0.0.1:5000
+2025-06-16 16:32:35,472 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-06-16 16:32:35,473 - werkzeug - INFO -  * Restarting with stat
+2025-06-16 16:32:36,072 - __main__ - INFO - Logging initialized. Log directory: C:\fastapi-flask\logs
+2025-06-16 16:32:36,098 - werkzeug - WARNING -  * Debugger is active!
+2025-06-16 16:32:36,107 - werkzeug - INFO -  * Debugger PIN: 966-514-189

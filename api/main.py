@@ -187,8 +187,7 @@ def place_order(order: OrderRequest, db:Session=Depends(get_db)):
             quantity = item.quantity
         )
         db.add(new_order)  # 주문테이블에 추가
-        db.delete(item)  # cart 테이블에서 삭제
-        db.refresh(new_order)  # DB에서 새로 생성된 primary key 값을 new_order 의 id에 저장
+        db.delete(item)  # cart 테이블에서 삭제        
     db.commit()
     return {"success":True, 'message':'주문이 완료 되었습니다'}
 #주문 목록 조회
