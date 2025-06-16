@@ -14,7 +14,9 @@
     </div>
     <h2>주문내역</h2>
     <div id='orderlist'></div>
+    <div id="total-price"></div>
     <div id="'message"></div>
+    
 </body>
 <script>
 $(document).ready(function() {
@@ -41,6 +43,8 @@ $(document).ready(function() {
                         </div>
                     `);
                 });
+                const totalPrice = orders.reduce((total, order) => total + (order.product.price * order.quantity), 0);
+                $('#total-price').text(`총 가격: ${totalPrice} 원`);
             },
             error: function() {
                 $('#message').text('주문 내역을 불러오는 중 오류가 발생했습니다.');
@@ -49,6 +53,7 @@ $(document).ready(function() {
     }
 
     loadOrders();
+
 });
 </script>
 
