@@ -163,11 +163,11 @@ def get_product(product_id: int, db: Session = Depends(get_db)):
 
 # 장바구니 상품 수량 수정
 @app.put('/api/cart/{cart_id}')
-def update_cart_item(cart_id: int, quantity: int, db: Session = Depends(get_db)):
+def update_cart_item(cart_id: int, item: CartItemOut, db: Session = Depends(get_db)):
     cart_item = db.query(Cart).filter(Cart.id == cart_id).first()
     if not cart_item:
         raise HTTPException(status_code=404, detail="장바구니 아이템을 찾을 수 없습니다.")
-    cart_item.quantity = quantity
+    cart_item.quantity = item.quantity
     db.commit()
     db.refresh(cart_item)
     return {"success": True, "message": "장바구니 아이템이 수정되었습니다.", "cart_id": cart_item.id}

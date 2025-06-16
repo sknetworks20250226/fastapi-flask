@@ -35,6 +35,9 @@ class CartItem(BaseModel):
     product_id: int
     quantity: int
 
+class CartItemOut(BaseModel):
+    quantity: int
+
 class OrderRequest(BaseModel):    
     user_id: int
 
