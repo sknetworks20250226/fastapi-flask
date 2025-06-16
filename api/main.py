@@ -160,6 +160,27 @@ def get_product(product_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="상품을 찾을 수 없습니다.")
     return product
 
+# 장바구니 상품 수량 수정
+@app.put('/api/cart/{cart_id}')
+def update_cart_item(cart_id: int, quantity: int, db: Session = Depends(get_db)):
+    cart_item = db.query(Cart).filter(Cart.id == cart_id).first()
+    if not cart_item:
+        raise HTTPException(status_code=404, detail="장바구니 아이템을 찾을 수 없습니다.")
+    cart_item.quantity = quantity
+    db.commit()
+    db.refresh(cart_item)
+    return {"success": True, "message": "장바구니 아이템이 수정되었습니다.", "cart_id": cart_item.id}
+
+# 장바구니 상품 삭제
+@app.delete('/api/cart/{cart_id}')
+def delete_cart_item(cart_id: int, db: Session = Depends(get_db)):
+    cart_item = db.query(Cart).filter(Cart.id == cart_id).first()
+    if not cart_item:
+        raise HTTPException(status_code=404, detail="장바구니 아이템을 찾을 수 없습니다.")
+    db.delete(cart_item)
+    db.commit()
+    return {"success": True, "message": "장바구니 아이템이 삭제되었습니다.", "cart_id": cart_item.id}
+
 # 정적 HTML 파일 서빙
 # FAST api 방식
 # app.mount("/", StaticFiles(directory="templates", html=True), name="static")

@@ -45,9 +45,9 @@
                                     <div data-cart-id="${item.id}">
                                         <h3>${product.name}</h3>
                                         <p>가격: ${product.price}원</p>
-                                        <p>수량: ${item.quantity}</p>
-                                        <button data-cart-id="${item.id}">수정</button>
-                                        <button data-cart-id="${item.id}">삭제</button>
+                                        <input class"quantity-input" type="number" value ="${item.quantity}" min="1">
+                                        <button data-cart-id="${item.id}" class="update-button">수정</button>
+                                        <button data-cart-id="${item.id}" class="remove-button">삭제</button>
                                     </div>
                                 `);  
                                 $('#total-price').text(`총 가격: ${totalPrice}원`);                            
@@ -67,6 +67,23 @@
         }
         loadCart(); // 페이지 로드 시 장바구니 불러오기
 
+        $(document).on('click', '.update-button', function() {
+            const cartId = $(this).data('cart-id');
+            const quantity = $(this).siblings('.quantity-input').val();
+            $.ajax({
+                url: `http://localhost:8000/api/cart/${cartId}`,
+                type: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify({ quantity: parseInt(quantity) }),
+                success: function() {
+                    $('#message').text('장바구니가 업데이트되었습니다.');
+                    loadCart(); // 업데이트 후 장바구니 다시 불러오기
+                },
+                error: function() {
+                    $('#message').text('장바구니 업데이트 중 오류가 발생했습니다.');
+                }
+            })
+        });
     });
 
         
