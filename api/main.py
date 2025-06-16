@@ -150,6 +150,9 @@ def place_order(order: OrderRequest, db:Session=Depends(get_db)):
 @app.get('/api/order', response_model=List[OrderOut])
 def get_orders(user_id:int = Query(...),db:Session=Depends(get_db)):
     orders = db.query(Order).filter(Order.user_id == user_id).all()
+    for order in orders:
+        product = db.query(Product).filter(Product.id == order.product_id).first()
+        order.product = product  # 주문에 상품 정보 추가            
     return orders
 
 
