@@ -10,7 +10,7 @@ def login_required(f):
     def decorated_function(*args, **kwargs):
         if 'user_id' not in session:
             flash('로그인이 필요합니다.', 'danger')
-            return redirect(url_for('login'))
+            return redirect(url_for('login', next=request.url))  # 로그인 페이지로 리다이렉트
         return f(*args, **kwargs)   # 원래 실행하려던 라우트 함수를 실행
     decorated_function.__name__ = f.__name__  # 데코레이터로 인해 함수 이름이 변경되므로 원래 이름으로 복원
     return decorated_function
