@@ -1,5 +1,6 @@
 from flask import Flask, render_template
-from flask import request,redirect, url_for, session, flash
+from flask import redirect, url_for, session, flash, request
+import requests
 app = Flask(__name__)
 
 app.secret_key = 'your_secret_key'  # 세션을 사용하기 위한 비밀키 설정
@@ -22,7 +23,7 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        response =  request.post('http://localhost:8000/api/login', 
+        response =  requests.post('http://localhost:8000/api/login', 
             json={
                 'username': username,
                 'password': password
@@ -32,7 +33,7 @@ def login():
             flash('로그인 성공!', 'success')
             return redirect(url_for('home'))
         else:
-            return render_template('login.html', error='로그인 실패')
+            return render_template('register.html', error='로그인 실패')
     return render_template('login.html')
 
 @app.route('/register')

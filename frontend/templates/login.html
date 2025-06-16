@@ -10,7 +10,7 @@
 </head>
 <body>
     <h2>로그인</h2>
-    <form id="loginform">
+    <form id="loginform" method="post" action="/login">
         <input type="text" name="username" placeholder="이름" required>
         <input type="password" name="password" required>
         <button type="submit">로그인</button>
@@ -20,7 +20,7 @@
     </div>
     <div id="message"></div>
 </body>
-<script>
+<!-- <script>
     $(document).ready(function(){
          $('#loginform').on('submit',
             function(e) {
@@ -45,8 +45,6 @@
                 })
             }
         )
-    })
-
-   
-</script>
+    })   
+</script> -->
 </html>
