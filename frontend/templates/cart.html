@@ -84,6 +84,23 @@
                 }
             })
         });
+        // 삭제
+        $(document).on('click', '.remove-button', function() {
+            const cartId = $(this).data('cart-id');
+            $.ajax({
+                url: `http://localhost:8000/api/cart/${cartId}`,
+                type: 'DELETE',
+                success: function() {
+                    $('#message').text('장바구니에서 상품이 삭제되었습니다.');
+                    loadCart(); // 삭제 후 장바구니 다시 불러오기
+                },
+                error: function() {
+                    $('#message').text('장바구니 삭제 중 오류가 발생했습니다.');
+                }
+            });
+
+        });
+
     });
 
         
